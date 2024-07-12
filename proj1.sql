@@ -19,13 +19,18 @@ DROP VIEW IF EXISTS q4iv;
 DROP VIEW IF EXISTS q4v;
 
 -- Question 0
+-- What is the highest era (earned run average) recorded in baseball history?
 CREATE VIEW q0(era)
 AS
   SELECT MAX(era)
   FROM pitching
 ;
 
+-- SECTION 1: BASICS
+
+
 -- Question 1i
+-- In the people table, find the namefirst, namelast and birthyear for all players with weight greater than 300 pounds.
 CREATE VIEW q1i(namefirst, namelast, birthyear)
 AS
   SELECT namefirst, namelast, birthyear
@@ -34,6 +39,8 @@ AS
 ;
 
 -- Question 1ii
+-- Find the namefirst, namelast and birthyear of all players whose namefirst field contains a space.
+-- Order the results by namefirst, breaking ties with namelast both in ascending order.
 CREATE VIEW q1ii(namefirst, namelast, birthyear)
 AS
   SELECT namefirst, namelast, birthyear
@@ -43,6 +50,9 @@ AS
 ;
 
 -- Question 1iii
+-- From the people table, group together players with the same birthyear, and 
+-- report the birthyear, average height, and number of players for each birthyear.
+-- Order the results by birthyear in ascending order.
 CREATE VIEW q1iii(birthyear, avgheight, count)
 AS
   SELECT birthyear, AVG(height), COUNT(*)
@@ -52,6 +62,8 @@ AS
 ;
 
 -- Question 1iv
+-- Following the results of part iii, now only include groups with an average height > 70. 
+-- Again order the results by birthyear in ascending order.
 CREATE VIEW q1iv(birthyear, avgheight, count)
 AS
   SELECT *
@@ -59,7 +71,13 @@ AS
   WHERE avgheight > 70
 ;
 
+
+-- SeCtION 2: HALL OF FAME SCHOOLS
+
+
 -- Question 2i
+--  Find the namefirst, namelast, playerid and yearid of all people who were successfully inducted into the Hall of Fame
+--  in descending order of yearid. Break ties on yearid by playerid (ascending).
 CREATE VIEW q2i(namefirst, namelast, playerid, yearid)
 AS
   SELECT P.namefirst, P.namelast, P.playerID, H.yearid
@@ -71,6 +89,9 @@ AS
 ;
 
 -- Question 2ii
+--  Find the people who were successfully inducted into the Hall of Fame and played in college at a school located in the state of California. 
+--  For each person, return their namefirst, namelast, playerid, schoolid, and yearid in descending order of yearid.
+--  Break ties on yearid by schoolid, playerid (ascending). For this question, yearid refers to the year of induction into the Hall of Fame.
 CREATE VIEW q2ii(namefirst, namelast, playerid, schoolid, yearid)
 AS
   SELECT H.namefirst, H.namelast, H.playerid, C.schoolID, H.yearid
@@ -83,6 +104,9 @@ AS
 ;
 
 -- Question 2iii
+--  Find the playerid, namefirst, namelast and schoolid of all people who were successfully inducted into the Hall of Fame 
+--  whether or not they played in college. Return people in descending order of playerid.
+--  Break ties on playerid by schoolid (ascending). (Note: schoolid should be NULL if they did not play in college.)
 CREATE VIEW q2iii(playerid, namefirst, namelast, schoolid)
 AS
   SELECT H.playerid, H.namefirst, H.namelast, C.schoolID
