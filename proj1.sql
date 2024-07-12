@@ -115,7 +115,15 @@ AS
   ORDER BY H.playerid DESC, C.schoolID ASC
 ;
 
+
+-- SECTION 3: SABERMETRICS
+
+
 -- Question 3i
+--  Find the playerid, namefirst, namelast, yearid and single-year slg (Slugging Percentage) of the players with the 10 best annual slg recorded over all time.
+--  A player can appear multiple times in the output.
+--  For statistical significance, only include players with more than 50 at-bats in the season. 
+--  Order the results by slg descending, and break ties by yearid, playerid (ascending)
 CREATE VIEW q3i(playerid, namefirst, namelast, yearid, slg)
 AS
   SELECT P.playerID, P.namefirst, P.namelast, B.yearID,
@@ -129,6 +137,9 @@ AS
 ;
 
 -- Question 3ii
+--  Find the playerid, namefirst, namelast and lslg (Lifetime Slugging Percentage) for the players with the top 10 lslg. 
+--  Lslg uses the same formula as Slugging Percentage (SLG), but it uses the number of singles, doubles, triples, home runs, 
+--  and at bats each player has over their entire career, rather than just over a single season.
 CREATE VIEW q3ii(playerid, namefirst, namelast, lslg)
 AS
     SELECT P.playerID, P.namefirst, P.namelast,
@@ -140,8 +151,8 @@ AS
     LIMIT 10
 ;
 
--- Question 3ii batting helper
--- contains the sum of the batting stats over a players lifetime
+-- Helper Function for Question 3ii
+-- The following helper function calculates the sum of the batting stats over a player's lifetime.
 CREATE VIEW helperbat(playerid, s, d, t, hr, ab)
 AS
     SELECT B.playerID,(sum(B.H) - sum(B.H2B) - sum(B.H3B) - sum(B.HR)),
@@ -152,6 +163,8 @@ AS
 ;
 
 -- Question 3iii
+--  Find the namefirst, namelast and Lifetime Slugging Percentage (lslg) 
+--  of batters whose lifetime slugging percentage is higher than San Francisco's favorite Willie Mays.
 CREATE VIEW q3iii(namefirst, namelast, lslg)
 AS
   SELECT P.namefirst, P.namelast, ((B.s + (2*B.d)+ (3*B.t) + (4*B.hr))
@@ -168,7 +181,11 @@ AS
 ;
 
 
--- Question 4i
+-- SECTION 4: SALARIES
+
+
+--  Question 4i
+--  Find the yearid, min, max and average of all player salaries for each year recorded, ordered by yearid in ascending order.
 CREATE VIEW q4i(yearid, min, max, avg)
 AS
   SELECT yearid, MIN(salary), MAX(salary), AVG(salary)
@@ -178,6 +195,10 @@ AS
 ;
 
 -- Question 4ii
+--  For salaries in 2016, compute a histogram. Divide the salary range into 10 equal bins from min to max, 
+--  with binids 0 through 9, and count the salaries in each bin. 
+--  Return the binid, low and high boundaries for each bin, as well as the number of salaries in each bin, 
+--  with results sorted from smallest bin to largest. Note: The high value for bin 9 may be inclusive
 CREATE VIEW q4ii(binid, low, high, count)
 AS
   SELECT binid, mini + (binid * width), mini + ((binid+1) * width), COUNT(salary)-- replace this line
@@ -187,7 +208,8 @@ AS
   GROUP BY binid
 ;
 
-
+--  Helper function for question 4ii
+--  Computes the minimum and maximum salaries in 2016 as well as the width of each bin of the histogram.
 CREATE VIEW histRange(width, mini, maxi)
 AS
     SELECT  ((MAX(salary) - MIN(salary))/10.0), MIN(salary), MAX(salary)
@@ -197,6 +219,8 @@ AS
 
 
 -- Question 4iii
+--  For each year with recorded salaries after the first, return the yearid, mindiff, maxdiff, and avgdiff with respect to the previous year. 
+--  Order the output by yearid in ascending order. (You should omit the very first year of recorded salaries from the result.)
 CREATE VIEW q4iii(yearid, mindiff, maxdiff, avgdiff)
 AS
   SELECT yearid, (min(s.salary) - (SELECT min(salary) FROM salaries as ss WHERE ss.yearid LIKE (s.yearid - 1) GROUP BY ss.yearid)),
@@ -209,6 +233,9 @@ AS
 ;
 
 -- Question 4iv
+--  In 2001, the max salary went up by over $6 million. Write a query to find the players that had the max salary in 2000 and 2001. 
+--  Return the playerid, namefirst, namelast, salary and yearid for those two years.
+--  If multiple players tied for the max salary in a year, return all of them.
 CREATE VIEW q4iv(playerid, namefirst, namelast, salary, yearid)
 AS
     SELECT p.playerID, p.namefirst, p.namelast, s.salary, s.yearID
@@ -223,6 +250,9 @@ AS
 
 
 -- Question 4v
+--  Each team has at least 1 All Star and may have multiple. 
+--  For each team in the year 2016, give the teamid and diffAvg 
+--  (the difference between the team's highest paid all-star's salary and the team's lowest paid all-star's salary).
 CREATE VIEW q4v(team, diffAvg)
 AS
   SELECT A.teamid, max(S.salary) - min(S.salary)
